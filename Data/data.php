@@ -109,38 +109,16 @@ while ($row = mysql_fetch_array($result)) {
         die('Invalid query: ' . mysql_error());
 }
 
-/** import data into LabTest table */
-@mysql_select_db($database) or die(mysql_error());
-$result = mysql_query("SELECT DISTINCT LabTestType, ReferenceRangeHigh, ReferenceRangeLow FROM messages");
-@mysql_select_db($database2) or die(mysql_error());
-$LabTestId = 7003;
-while ($row = mysql_fetch_array($result)) {
-    if($row{'LabTestType'}=="prolactin" && $row{'ReferenceRangeHigh'} == '4') {
-        $import = mysql_query("INSERT INTO LabTest VALUES ( '7001', '" . $row{'LabTestType'} . "', '" .
-            $row{'ReferenceRangeHigh'} . "', '" . $row{'ReferenceRangeLow'} . "') ON DUPLICATE KEY UPDATE LabTestId=LabTestId");
-    }
-    if($row{'LabTestType'}=="prolactin" && $row{'ReferenceRangeHigh'} == '56') {
-        $import = mysql_query("INSERT INTO LabTest VALUES ( '7002', '" . $row{'LabTestType'} . "', '" .
-            $row{'ReferenceRangeHigh'} . "', '" . $row{'ReferenceRangeLow'} . "') ON DUPLICATE KEY UPDATE LabTestId=LabTestId");
-    }
-    else{
-        $import=mysql_query("INSERT INTO LabTest VALUES ('".$LabTestId."', '".$row{'LabTestType'}."', '".
-            $row{'ReferenceRangeHigh'}."', '".$row{'ReferenceRangeLow'}."') ON DUPLICATE KEY UPDATE LabTestId=LabTestId");
-        $LabTestId++;
-    }
-    if(!$import)
-        die('Invalid query: ' . mysql_error());
-}
-
 
 /** import data into Test table */
 @mysql_select_db($database) or die(mysql_error());
-$result = mysql_query("SELECT patientId, LabTestResultId, PatientVisitId, LabTestPerformedDate,
-                        TestResultValue FROM messages");
+$result = mysql_query("SELECT patientId, LabTestResultId, PatientVisitId, LabTestType, TestResultValue,
+                        ReferenceRangeHigh, ReferenceRangeLow, LabTestPerformedDate FROM messages");
 @mysql_select_db($database2) or die(mysql_error());
 while ($row = mysql_fetch_array($result)) {
-    $import=mysql_query("INSERT INTO Lab_Test_Report VALUES ('".$row{'patientId'}."', '".$row{'LabTestResultId'}."', '".
-        $row{'PatientVisitId'}."', '".$row{'LabTestPerformedDate'}."', '".$row{'TestResultValue'}."')
+    $import=mysql_query("INSERT INTO LabTestReport VALUES ('".$row{'patientId'}."', '".$row{'LabTestResultId'}."', '".
+        $row{'PatientVisitId'}."', '".$row{'LabTestType'}."', '".$row{'TestResultValue'}."', '".$row{'ReferenceRangeHigh'}.
+        "', '".$row{'ReferenceRangeLow'}."', '".$row{'LabTestPerformedDate'}."')
          ON DUPLICATE KEY UPDATE patientId=patientId, LabTestResultId=LabTestResultId");
     if(!$import)
         die('Invalid query: ' . mysql_error());

@@ -29,8 +29,15 @@ $conn=mysql_connect('127.0.0.1',$username,$password);
 /**Show patient info*/
 $result = mysql_query("SELECT patientId, GivenName, FamilyName, BirthTime, suffix, gender,
           xmlCreationDate FROM Patient WHERE patientId='".$pid."'");
-echo "<h1> Patient Profile </h1>
-    <h2> Patient Information </h2>
+echo "<h1> Patient Profile </h1>"
+?>
+    <form>
+        <input type="button" value="Edit" onclick="location.href = '../Interface/DoctorEdit.html'"/>
+        (Click to edit patient's allergy and plan information.)
+    </form>
+
+<?php
+echo "<h2> Patient Information </h2>
     <table><tr><th>GivenName</th><th>FamilyName</th><th>Suffix</th>
     <th>Gender</th><th>BirthTime</th><th>Last Update</th></tr>";
 while($row = mysql_fetch_assoc($result)) {
@@ -105,8 +112,40 @@ while($row = mysql_fetch_assoc($result)) {
 echo "</table>";
 
 /**Show Lab Test Report information*/
-/**Show Family History information*/
+$result = mysql_query("SELECT LabTestResultId, PatientVisitId, LabTestType, TestResultValue,ReferenceRangeHigh,
+                        ReferenceRangeLow, LabTestPerformedDate FROM LabTestReport WHERE patientId='".$pid."'");
+echo " <h2> Lab Test Report </h2>
+    <table><tr><th>Test Report ID</th><th>Visit ID</th><th>Type</th><th>Result</th><th>Reference Value(High)</th>
+    <th>Reference Value(Low)</th><th>Performed Date</th></tr>";
+while($row = mysql_fetch_assoc($result)) {
+    echo "<tr>";
+    echo "<td><div contenteditable>" . $row['LabTestResultId'] . "</div></td>";
+    echo "<td><div contenteditable>" . $row['PatientVisitId'] . "</div></td>";
+    echo "<td><div contenteditable>" . $row['LabTestType'] . "</div></td>";
+    echo "<td><div contenteditable>" . $row['TestResultValue'] . "</div></td>";
+    echo "<td><div contenteditable>" . $row['ReferenceRangeHigh'] . "</div></td>";
+    echo "<td><div contenteditable>" . $row['ReferenceRangeLow'] . "</div></td>";
+    echo "<td><div contenteditable>" . $row['LabTestPerformedDate'] . "</div></td>";
+    echo "</tr>";
+}
+echo "</table>";
 
+
+/**Show Family History information*/
+$result = mysql_query("SELECT R.RelativeId, Relation, age, Diagnosis
+                        FROM relatives R, Patient_has_FamilyHistory P
+                        WHERE R.RelativeId = P.RelativeId AND P.patientId='".$pid."'");
+echo " <h2> Family History </h2>
+    <table><tr><th>RelativeId</th><th>Relation</th><th>Age</th><th>Diagnosis</th></tr>";
+while($row = mysql_fetch_assoc($result)) {
+    echo "<tr>";
+    echo "<td><div contenteditable>" . $row['RelativeId'] . "</div></td>";
+    echo "<td><div contenteditable>" . $row['Relation'] . "</div></td>";
+    echo "<td><div contenteditable>" . $row['age'] . "</div></td>";
+    echo "<td><div contenteditable>" . $row['Diagnosis'] . "</div></td>";
+    echo "</tr>";
+}
+echo "</table>";
 
 
 /**Show Allergy information, this table should be editable*/

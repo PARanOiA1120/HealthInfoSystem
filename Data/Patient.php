@@ -17,18 +17,6 @@
 
 <?php
 $pid = intval($_GET['PatientID']);
-$to_encode=array('pid' => $pid);
-json_encode($to_encode);
-
-?>
-
-<form>
-    <input type="button" value="Edit" onclick="location.href = '../Interface/Patient.html'"/>
-    (Enter your password again to edit your profile!)
-</form>
-
-
-<?php
 
 $username="root";
 $password="";
@@ -36,7 +24,15 @@ $database="HealthInformationSystem";
 
 $conn=mysql_connect('127.0.0.1',$username,$password);
 @mysql_select_db($database, $conn) or die( "Unable to select HealthInformationSystem");
+?>
 
+<form>
+    <input type="button" value="Edit" onclick="location.href = '../Interface/Patient.html'"/>
+    (Click to edit your profile!)
+</form>
+
+
+<?php
 /**Show patient info*/
 $result = mysql_query("SELECT GivenName, FamilyName, BirthTime, suffix, gender,
           xmlCreationDate FROM Patient WHERE patientId='".$pid."'");

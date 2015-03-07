@@ -18,7 +18,7 @@
 </head>
 <body>
 <table border=1, align="center", id="Patient">
-    <caption> Patient Table</caption>
+    <h2> Patient Table</h2>
     <tr>
         <th>Patient ID</th>
         <th>Given Name</th>
@@ -33,7 +33,7 @@
 </table>
 
 <table border=1, align="center", id="Guardian">
-    <caption> Guardian Table</caption>
+    <h2> Guardian Table</h2>
     <tr>
         <th>Guardian Number</th>
         <th>Guardian Given Name</th>
@@ -47,13 +47,17 @@
     </tr>
 </table>
 
-<button id="showBtn">Show</button>
 <button id="saveBtn">Save</button>
-<p id="demo"></p>
 
 <script>
     var xmlhttp = new XMLHttpRequest();
-    var url = "http://localhost/HealthInfoSystem/Data/Patient.php";
+    var oldURL = document.referrer;
+    var pid = oldURL.substring(61,66);
+
+    var first_time = true;
+    var xmlhttp = new XMLHttpRequest();
+    var url = "http://localhost/HealthInfoSystem/data/show_patient.php?PatientID="+ pid;
+
     xmlhttp.onreadystatechange=function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             myFunction(xmlhttp.responseText);
@@ -62,31 +66,13 @@
     xmlhttp.open("GET", url, true);
     xmlhttp.send();
 
-    var pid="12345";
     function myFunction(response) {
-        var arr = JSON.parse(response);
-        pid = arr[0]["pid"];
-    }
-
-    var first_time = true;
-    var xmlhttp = new XMLHttpRequest();
-    var url = "http://localhost/HealthInfoSystem/data/show_patient.php?PatientID=" + "12345";
-
-    xmlhttp.onreadystatechange=function() {
-        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-            myFunc(xmlhttp.responseText);
-        }
-    }
-    xmlhttp.open("GET", url, true);
-    xmlhttp.send();
-
-    function myFunc(response) {
         var arr = JSON.parse(response);
         var i;
         var out = "<table>";
 
         for (i = 0; i < arr.length; i++) {
-            out += "<tr><td>" + arr[i].patientId + "</td>";
+            out += "<tr><td>" + arr[i]["patientId"] + "</td>";
             out += "<td><div contenteditable>" + arr[i]["GivenName"] + "</div></td>";
             out += "<td><div contenteditable>" + arr[i]["FamilyName"] + "</div></td>";
             out += "<td><div contenteditable>" + arr[i]["BirthTime"] + "</div></td>";
@@ -106,7 +92,6 @@
             row.innerHTML = out;
         }
         out += "</tr></table>"
-
     }
 
     document.getElementById("saveBtn").addEventListener("click", function(){
@@ -114,20 +99,14 @@
             "gender", "GuardianNo", "Relationship"];
         var patientAssocArray = {};
         var table = document.getElementById("Patient");
-        //var str = table.rows[1].cells[0].innerHTML;
         for (var i = 1, row; row = table.rows[i]; i++) {
             for (var j = 0, col; col = row.cells[j]; j++) {
-//                patientAssocArray[table.rows[0].cells[j].innerText.split(/\n/)[0]] =
-//                        table.rows[1].cells[j].innerText.split(/\n/)[0];
                 patientAssocArray[patient_key_array[j]] = table.rows[1].cells[j].innerText.split(/\n/)[0];
-
             }
         }
-
-        //window.alert(patientAssocArray["GivenName"]);
         patientEditedJson = JSON.stringify(patientAssocArray);
         var json_http = new XMLHttpRequest();
-        var url = "http://localhost/HealthInfoSystem/data/update_patient.php?PatientID="+ "12345";
+        var url = "http://localhost/HealthInfoSystem/data/update_patient.php?PatientID="+ pid;
         var params = patientEditedJson;
         json_http.open("POST", url, true);
 

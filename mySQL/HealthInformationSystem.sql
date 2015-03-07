@@ -91,25 +91,17 @@ create table `Patient_has_Allergies`(
 );
 
 
-
 #2.7 LabTestReport
-create table `LabTest`(
-	`LabTestId` varchar(100),
- 	`LabTestType` varchar(100),
-	`ReferenceRangeHigh` varchar(100),
-    `ReferenceRangeLow` varchar(100),
-	 primary key(`LabTestId`)
-);
-
-create table `Lab_Test_Report`(
+create table `LabTestReport`(
 	`patientId` varchar(100),
-	`LabTestId` varchar(100),
 	`LabTestResultId` varchar(100),
 	`PatientVisitId` varchar(100),
+    `LabTestType` varchar(100),
     `TestResultValue` varchar(100),
+	`ReferenceRangeHigh` varchar(100),
+    `ReferenceRangeLow` varchar(100),
 	`LabTestPerformedDate` varchar(100),
 	primary key(`patientId`,`LabTestResultId`, `PatientVisitId`),
-	foreign key(`LabTestId`) references `LabTest`(`LabTestId`),
     foreign key(`patientId`) references `Patient`(`patientId`) ON DELETE CASCADE
 );
 

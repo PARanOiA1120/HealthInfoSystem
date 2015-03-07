@@ -14,7 +14,6 @@ $suffix = $input["suffix"];
 $gender = $input["gender"];
 $GuardianNo = $input["GuardianNo"];
 $Relationship = $input["Relationship"];
-#print_r($input["GivenName"]);
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
