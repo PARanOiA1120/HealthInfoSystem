@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <script>
+        function showQueryResult(str) {
+            if (str=="") {
+                document.getElementById("txtHint").innerHTML="";
+                return;
+            }
+            if (window.XMLHttpRequest)
+                xmlhttp=new XMLHttpRequest();
+            else
+                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+            xmlhttp.onreadystatechange=function() {
+                if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+                    document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
+                }
+            }
+            xmlhttp.open("GET","http://localhost/HealthInfoSystem/Data/Administrator.php?q="+str,true);
+            xmlhttp.send();
+        }
+    </script>
+</head>
+<body>
+
+<form>
+    <select name="query" onchange="showQueryResult(this.value)">
+        <option value="">Select a query:</option>
+        <option value="1">View number of patients for each type of allergy (substance).</option>
+        <option value="2">List the patients who have more than one allergy</option>
+        <option value="3">List the patients who have a plan for surgery today.</option>
+        <option value="4">Identify authors with more than one patient.</option>
+    </select>
+</form>
+<br>
+<div id="txtHint"><b>Query result will be listed here.</b></div>
+
+</body>
+</html>

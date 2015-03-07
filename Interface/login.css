@@ -1,0 +1,69 @@
+/**
+* Created by Ariel Xin on 2/28/15.
+*/
+
+.title h1 {
+    text-align: center;
+}
+.title h3 {
+    text-align: center;
+}
+
+.roles h2{
+    font-family: 'Courier New Bold', serif;
+    text-align: center;
+    padding-bottom: 50px;
+    padding-top: 50px;
+    border: 10px solid black;
+    margin: 50px;
+    color: black;
+    cursor: pointer;
+
+    background: url('http://www.krtekband.net/blog/wp-content/uploads/2013/02/sun-blur-levysi1.png');
+    opacity: 0.8;
+    filter: alpha(opacity=40);
+}
+
+
+input{
+    width:100%;
+    height:35px;
+    margin-top:5px;
+    border:1px solid #999;
+    border-radius:3px;
+    padding:5px;
+}
+input[type=button]{
+    background-color:#123456;
+    border:1px solid white;
+    font-family: 'Courier New Bold', serif;
+    font-Weight:bold;
+    font-size:18px;
+    color:white;
+    width:49%;
+}
+
+#logindiv{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+    background: black;
+    display: none;
+    opacity: 0.95;
+}
+
+#login {
+    width:350px;
+    margin:0px;
+    background-color:white;
+    font-family: 'Courier New Bold', serif;
+    position: relative;
+    border: 5px solid rgb(90, 158, 181);
+    padding: 10px;
+    left: 50%;
+    top: 50%;
+    margin-left:-210px;
+    margin-top:-158px;
+}

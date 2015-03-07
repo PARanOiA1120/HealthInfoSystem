@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, td, th {
+            border: 1px solid black;
+            padding: 5px;
+        }
+        th {text-align: left;}
+    </style>
+    <script language="javascript" type="text/javascript" src="jquery-1.11.2.min.js"></script>
+</head>
+<body>
+<table border=1, align="center", id="Patient">
+    <caption> Patient Table</caption>
+    <tr>
+        <th>Patient ID</th>
+        <th>Given Name</th>
+        <th>Family Name</th>
+        <th>Birthday</th>
+        <th>Suffix</th>
+        <th>Gender</th>
+        <th>Guardian Number</th>
+        <th>Relationship</th>
+    </tr>
+
+</table>
+
+<table border=1, align="center", id="Guardian">
+    <caption> Guardian Table</caption>
+    <tr>
+        <th>Guardian Number</th>
+        <th>Guardian Given Name</th>
+        <th>Guardian Family Name</th>
+        <th>Phone</th>
+        <th>Address</th>
+        <th>City</th>
+        <th>State</th>
+        <th>Zip</th>
+
+    </tr>
+</table>
+
+<button id="showBtn">Show</button>
+<button id="saveBtn">Save</button>
+<p id="demo"></p>
+
+<script>
+    var xmlhttp = new XMLHttpRequest();
+    var url = "http://localhost/HealthInfoSystem/Data/Patient.php";
+    xmlhttp.onreadystatechange=function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            myFunction(xmlhttp.responseText);
+        }
+    }
+    xmlhttp.open("GET", url, true);
+    xmlhttp.send();
+
+    var pid="12345";
+    function myFunction(response) {
+        var arr = JSON.parse(response);
+        pid = arr[0]["pid"];
+    }
+
+    var first_time = true;
+    var xmlhttp = new XMLHttpRequest();
+    var url = "http://localhost/HealthInfoSystem/data/show_patient.php?PatientID=" + "12345";
+
+    xmlhttp.onreadystatechange=function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            myFunc(xmlhttp.responseText);
+        }
+    }
+    xmlhttp.open("GET", url, true);
+    xmlhttp.send();
+
+    function myFunc(response) {
+        var arr = JSON.parse(response);
+        var i;
+        var out = "<table>";
+
+        for (i = 0; i < arr.length; i++) {
+            out += "<tr><td>" + arr[i].patientId + "</td>";
+            out += "<td><div contenteditable>" + arr[i]["GivenName"] + "</div></td>";
+            out += "<td><div contenteditable>" + arr[i]["FamilyName"] + "</div></td>";
+            out += "<td><div contenteditable>" + arr[i]["BirthTime"] + "</div></td>";
+            out += "<td><div contenteditable>" + arr[i]["suffix"] + "</div></td>";
+            out += "<td><div contenteditable>" + arr[i]["gender"] + "</div></td>";
+            out += "<td>" + arr[i]["GuardianNo"] + "</td>";
+            out += "<td><div contenteditable>" + arr[i]["Relationship"] + "</div></td>";
+
+            var patient_table = document.getElementById("Patient");
+            if (first_time == true) {
+                first_time = false;
+            }
+            else {
+                patient_table.deleteRow(-1);
+            }
+            var row = patient_table.insertRow(-1);
+            row.innerHTML = out;
+        }
+        out += "</tr></table>"
+
+    }
+
+    document.getElementById("saveBtn").addEventListener("click", function(){
+        var patient_key_array = ["patientId", "GivenName", "FamilyName", "BirthTime", "suffix",
+            "gender", "GuardianNo", "Relationship"];
+        var patientAssocArray = {};
+        var table = document.getElementById("Patient");
+        //var str = table.rows[1].cells[0].innerHTML;
+        for (var i = 1, row; row = table.rows[i]; i++) {
+            for (var j = 0, col; col = row.cells[j]; j++) {
+//                patientAssocArray[table.rows[0].cells[j].innerText.split(/\n/)[0]] =
+//                        table.rows[1].cells[j].innerText.split(/\n/)[0];
+                patientAssocArray[patient_key_array[j]] = table.rows[1].cells[j].innerText.split(/\n/)[0];
+
+            }
+        }
+
+        //window.alert(patientAssocArray["GivenName"]);
+        patientEditedJson = JSON.stringify(patientAssocArray);
+        var json_http = new XMLHttpRequest();
+        var url = "http://localhost/HealthInfoSystem/data/update_patient.php?PatientID="+ "12345";
+        var params = patientEditedJson;
+        json_http.open("POST", url, true);
+
+        json_http.setRequestHeader("Content-type", "application/json");
+        json_http.setRequestHeader("Content-length", params.length);
+        json_http.setRequestHeader("Connection","close");
+
+        json_http.onreadystatechange = function() {
+            if(json_http.readyState == 4 && json_http.status == 200){
+                alert(json_http.responseText);
+            }
+        }
+        json_http.send(params);
+    });
+
+</script>
+
+</body>
+</html>
