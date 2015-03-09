@@ -16,6 +16,12 @@
 <body>
 
 <?php
+/**
+ * Created by PhpStorm.
+ * User: Ariel Xin
+ * Date: 3/2/15
+ * Time: 5:20 PM
+ */
 
 $q = intval($_GET['q']);
 
@@ -78,9 +84,8 @@ if($q == '3') {
 
     $result = mysql_query("SELECT P.patientId, A.PlanId, P.GivenName, P.FamilyName, A.ScheduledDate
                             FROM Patient P, patient_plans_activity A
-                            WHERE P.patientId=A.patientId AND A.Activity='Radiology' AND A.ScheduledDate LIKE".$date);
-                            /**use Radiology for testing, should change to Surgery*/
-                            /**Add a tuple with ScheduleDate=today's date before testing*/
+                            WHERE P.patientId=A.patientId AND A.Activity='Surgery' AND A.ScheduledDate LIKE".$date);
+
     echo "<table><tr>
     <th>PatientId</th>
     <th>PlanId</th>

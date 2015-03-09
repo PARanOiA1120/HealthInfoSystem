@@ -49,8 +49,6 @@ create table `Patient`(
     foreign key(`PayerId`) references `InsuranceCompany`(`PayerId`)
 );
 
-SELECT patientId,GivenName, FamilyName, BirthTime, GuardianNo FROM Patient WHERE patientId = '12345';
-
 #2.3 Author
 #Each patient can be ASSIGNED many authors. 
 #Some patients do not have any authors
@@ -67,8 +65,10 @@ create table `Author_Records_Patient`(
 	`patientId` varchar(100),
 	`ParticipatingRole` varchar(100) DEFAULT NULL,
     primary key(`patientId`, `AuthorId`),
-    foreign key(`patientId`) references `Patient`(`patientId`),
+    foreign key(`patientId`) references `Patient`(`patientId`)
+    ON DELETE CASCADE,
     foreign key(`AuthorId`) references `Author`(`AuthorId`)
+    ON DELETE CASCADE
 );
 
 #2.6 Allergies
@@ -88,6 +88,7 @@ create table `Patient_has_Allergies`(
 	foreign key(`patientId`) references `Patient`(`patientId`)  
 	ON DELETE CASCADE,
 	foreign key(`Allergy_id` ) references `Allergies`(`Allergy_id`)
+    ON DELETE CASCADE
 );
 
 
@@ -97,11 +98,11 @@ create table `LabTestReport`(
 	`LabTestResultId` varchar(100),
 	`PatientVisitId` varchar(100),
     `LabTestType` varchar(100),
-    `TestResultValue` varchar(100),
-	`ReferenceRangeHigh` varchar(100),
-    `ReferenceRangeLow` varchar(100),
+    `TestResultValue` float,
+	`ReferenceRangeHigh` float,
+    `ReferenceRangeLow` float,
 	`LabTestPerformedDate` varchar(100),
-	primary key(`patientId`,`LabTestResultId`, `PatientVisitId`),
+	primary key(`patientId`,`LabTestResultId`, `LabTestType`, `PatientVisitId`),
     foreign key(`patientId`) references `Patient`(`patientId`) ON DELETE CASCADE
 );
 
@@ -130,7 +131,7 @@ create table `patient_plans_activity`(
 #the history of several family members of a patient.
 create table `relatives`(
 	`RelativeId` varchar(100),
-	`age` varchar(100) DEFAULT NULL,
+	`age` integer DEFAULT NULL,
 	`Diagnosis` varchar(100),
 	primary key(`RelativeId`)
 );
@@ -143,6 +144,7 @@ create table `Patient_has_FamilyHistory`(
 	primary key(`patientId`, `RelativeId`),
     foreign key(`RelativeId`) references `relatives`(`RelativeId`),
 	foreign key(`patientId`) references `Patient`(`patientId`)
+    ON DELETE CASCADE
 );
 
 

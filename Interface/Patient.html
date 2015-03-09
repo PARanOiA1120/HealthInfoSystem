@@ -68,8 +68,10 @@
 
     function myFunction(response) {
         var arr = JSON.parse(response);
+        alert(arr)
         var i;
         var out = "<table>";
+        var out1 = "<table>";
 
         for (i = 0; i < arr.length; i++) {
             out += "<tr><td>" + arr[i]["patientId"] + "</td>";
@@ -81,17 +83,31 @@
             out += "<td>" + arr[i]["GuardianNo"] + "</td>";
             out += "<td><div contenteditable>" + arr[i]["Relationship"] + "</div></td>";
 
+            out1 += "<tr><td>" + arr[i]["GuardianNo"] + "</td>";
+            out1 += "<td><div contenteditable>" + arr[i]["FirstName"] + "</div></td>";
+            out1 += "<td><div contenteditable>" + arr[i]["LastName"] + "</div></td>";
+            out1 += "<td><div contenteditable>" + arr[i]["phone"] + "</div></td>";
+            out1 += "<td><div contenteditable>" + arr[i]["address"] + "</div></td>";
+            out1 += "<td><div contenteditable>" + arr[i]["city"] + "</div></td>";
+            out1 += "<td><div contenteditable>" + arr[i]["state"] + "</div></td>";
+            out1 += "<td><div contenteditable>" + arr[i]["zip"] + "</div></td>";
+
             var patient_table = document.getElementById("Patient");
+            var guardian_table = document.getElementById("Guardian");
             if (first_time == true) {
                 first_time = false;
             }
             else {
                 patient_table.deleteRow(-1);
+                guardian_table.deleteRow(-1);
             }
             var row = patient_table.insertRow(-1);
+            var row1 = guardian_table.insertRow(-1);
             row.innerHTML = out;
+            row1.innerHTML = out1;
         }
         out += "</tr></table>"
+        out1 += "</tr></table>"
     }
 
     document.getElementById("saveBtn").addEventListener("click", function(){

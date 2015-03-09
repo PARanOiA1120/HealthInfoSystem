@@ -8,15 +8,16 @@
 
 $username="root";
 $password="";
-$database="healthmessagesexchange2";
+$database="healthmessagesexchange3";
 $database2="HealthInformationSystem";
+$messages = "messages";
 
 mysql_connect('127.0.0.1',$username,$password)or die(mysql_error());
 echo "Connected to MySQL<br>";
 
 /** import data into Guardians table*/
 @mysql_select_db($database) or die( mysql_error());
-$result = mysql_query("SELECT GuardianNo, FirstName, LastName, phone, address,city, state, zip  FROM messages");
+$result = mysql_query("SELECT GuardianNo, FirstName, LastName, phone, address,city, state, zip  FROM ". $messages);
 @mysql_select_db($database2) or die( mysql_error());
 while ($row = mysql_fetch_array($result)) {
     $import=mysql_query("INSERT INTO Guardians VALUES ('".$row{'GuardianNo'}."', '".$row{'FirstName'}."', '".$row{'LastName'}
@@ -28,7 +29,7 @@ while ($row = mysql_fetch_array($result)) {
 
 /** import data into InsuranceCompany table */
 @mysql_select_db($database) or die(mysql_error());
-$result = mysql_query("SELECT PayerId, messages.Name FROM messages");
+$result = mysql_query("SELECT PayerId, Name FROM ". $messages);
 @mysql_select_db($database2) or die(mysql_error());
 while ($row = mysql_fetch_array($result)) {
     $import=mysql_query("INSERT INTO InsuranceCompany VALUES ('".$row{'PayerId'}."', '".$row{'Name'}."')
@@ -40,7 +41,7 @@ while ($row = mysql_fetch_array($result)) {
 /** import data into Patient table */
 @mysql_select_db($database) or die(mysql_error());
 $result = mysql_query("SELECT patientId, GivenName, FamilyName, BirthTime, GuardianNo, Relationship, providerId,
-                              PayerId, PolicyType, Purpose, PolicyHolder FROM messages");
+                              PayerId, PolicyType, Purpose, PolicyHolder FROM ". $messages);
 @mysql_select_db($database2) or die(mysql_error());
 date_default_timezone_set('America/Los_Angeles');
 $date = date('j/n/Y h:i:s a', time());
@@ -58,7 +59,7 @@ while ($row = mysql_fetch_array($result)) {
 
 /** import data into Author table */
 @mysql_select_db($database) or die(mysql_error());
-$result = mysql_query("SELECT AuthorId, AuthorTitle, AuthorFirstName, AuthorLastName FROM messages");
+$result = mysql_query("SELECT AuthorId, AuthorTitle, AuthorFirstName, AuthorLastName FROM ". $messages);
 @mysql_select_db($database2) or die(mysql_error());
 while ($row = mysql_fetch_array($result)) {
     $import=mysql_query("INSERT INTO Author VALUES ('".$row{'AuthorId'}."', '".$row{'AuthorTitle'}."', '".
@@ -69,7 +70,7 @@ while ($row = mysql_fetch_array($result)) {
 
 /** import data into Author_Records_Patient table */
 @mysql_select_db($database) or die(mysql_error());
-$result = mysql_query("SELECT AuthorId, patientId, ParticipatingRole FROM messages");
+$result = mysql_query("SELECT AuthorId, patientId, ParticipatingRole FROM $messages WHERE AuthorId IS NOT NULL");
 @mysql_select_db($database2) or die(mysql_error());
 while ($row = mysql_fetch_array($result)) {
     $import=mysql_query("INSERT INTO Author_Records_Patient VALUES ('".$row{'AuthorId'}."', '".$row{'patientId'}."', '".
@@ -80,7 +81,7 @@ while ($row = mysql_fetch_array($result)) {
 
 /** import data into Allergies table */
 @mysql_select_db($database) or die(mysql_error());
-$result = mysql_query("SELECT Id, Substance FROM messages");
+$result = mysql_query("SELECT Id, Substance FROM  ". $messages);
 @mysql_select_db($database2) or die(mysql_error());
 while ($row = mysql_fetch_array($result)) {
     if($row{'Substance'} == null)
@@ -96,7 +97,7 @@ while ($row = mysql_fetch_array($result)) {
 
 /** import data into Patient_has_Allergies table */
 @mysql_select_db($database) or die(mysql_error());
-$result = mysql_query("SELECT patientId, Id, Reaction, Status FROM messages");
+$result = mysql_query("SELECT patientId, Id, Reaction, Status FROM $messages WHERE Id IS NOT NULL");
 @mysql_select_db($database2) or die(mysql_error());
 while ($row = mysql_fetch_array($result)) {
     if($row{'Reaction'} == null)
@@ -110,16 +111,16 @@ while ($row = mysql_fetch_array($result)) {
 }
 
 
-/** import data into Test table */
+/** import data into LABTestReport table */
 @mysql_select_db($database) or die(mysql_error());
 $result = mysql_query("SELECT patientId, LabTestResultId, PatientVisitId, LabTestType, TestResultValue,
-                        ReferenceRangeHigh, ReferenceRangeLow, LabTestPerformedDate FROM messages");
+                        ReferenceRangeHigh, ReferenceRangeLow, LabTestPerformedDate FROM $messages WHERE LabTestResultId IS NOT NULL");
 @mysql_select_db($database2) or die(mysql_error());
 while ($row = mysql_fetch_array($result)) {
     $import=mysql_query("INSERT INTO LabTestReport VALUES ('".$row{'patientId'}."', '".$row{'LabTestResultId'}."', '".
         $row{'PatientVisitId'}."', '".$row{'LabTestType'}."', '".$row{'TestResultValue'}."', '".$row{'ReferenceRangeHigh'}.
         "', '".$row{'ReferenceRangeLow'}."', '".$row{'LabTestPerformedDate'}."')
-         ON DUPLICATE KEY UPDATE patientId=patientId, LabTestResultId=LabTestResultId");
+         ON DUPLICATE KEY UPDATE patientId=patientId, LabTestResultId=LabTestResultId, PatientVisitId=PatientVisitId, LabTestType=LabTestType");
     if(!$import)
         die('Invalid query: ' . mysql_error());
 }
@@ -127,7 +128,7 @@ while ($row = mysql_fetch_array($result)) {
 
 /** import data into Activity table */
 @mysql_select_db($database) or die(mysql_error());
-$result = mysql_query("SELECT DISTINCT Activity FROM messages WHERE Activity IS NOT NULL");
+$result = mysql_query("SELECT DISTINCT Activity FROM $messages WHERE Activity IS NOT NULL");
 @mysql_select_db($database2) or die(mysql_error());
 while ($row = mysql_fetch_array($result)) {
     $import=mysql_query("INSERT INTO Activity VALUES ('".$row{'Activity'}."') ON DUPLICATE KEY UPDATE Activity = Activity");
@@ -137,7 +138,7 @@ while ($row = mysql_fetch_array($result)) {
 
 /** import data into patient_plans_activity table */
 @mysql_select_db($database) or die(mysql_error());
-$result = mysql_query("SELECT patientId, PlanId, Activity, ScheduledDate FROM messages WHERE Activity IS NOT NULL");
+$result = mysql_query("SELECT patientId, PlanId, Activity, ScheduledDate FROM $messages WHERE Activity IS NOT NULL");
 @mysql_select_db($database2) or die(mysql_error());
 while ($row = mysql_fetch_array($result)) {
     $import=mysql_query("INSERT INTO patient_plans_activity VALUES ('".$row{'patientId'}."', '".$row{'PlanId'}."', '".
@@ -149,7 +150,7 @@ while ($row = mysql_fetch_array($result)) {
 
 /** import data into relatives table */
 @mysql_select_db($database) or die(mysql_error());
-$result = mysql_query("SELECT DISTINCT RelativeId, age, Diagnosis FROM messages");
+$result = mysql_query("SELECT DISTINCT RelativeId, age, Diagnosis FROM ". $messages);
 @mysql_select_db($database2) or die(mysql_error());
 while ($row = mysql_fetch_array($result)) {
     $import=mysql_query("INSERT INTO relatives VALUES ('".$row{'RelativeId'}."', '".$row{'age'}."', '".
@@ -160,7 +161,7 @@ while ($row = mysql_fetch_array($result)) {
 
 /** import data into Patient_has_FamilyHistory table */
 @mysql_select_db($database) or die(mysql_error());
-$result = mysql_query("SELECT patientId, RelativeId, Relation FROM messages");
+$result = mysql_query("SELECT patientId, RelativeId, Relation FROM $messages WHERE RelativeId IS NOT NULL");
 @mysql_select_db($database2) or die(mysql_error());
 while ($row = mysql_fetch_array($result)) {
     $import=mysql_query("INSERT INTO Patient_has_FamilyHistory VALUES ('".$row{'patientId'}."', '".$row{'RelativeId'}."', '".
