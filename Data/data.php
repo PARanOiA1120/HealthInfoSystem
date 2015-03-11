@@ -8,11 +8,12 @@
 
 $username="root";
 $password="";
-$database="healthmessagesexchange3";
+$database="healthmessagesexchange2";
 $database2="HealthInformationSystem";
 $messages = "messages";
+$server = "127.0.0.1";
 
-mysql_connect('127.0.0.1',$username,$password)or die(mysql_error());
+mysql_connect($server, $username,$password)or die(mysql_error());
 echo "Connected to MySQL<br>";
 
 /** import data into Guardians table*/
@@ -114,7 +115,7 @@ while ($row = mysql_fetch_array($result)) {
 /** import data into LABTestReport table */
 @mysql_select_db($database) or die(mysql_error());
 $result = mysql_query("SELECT patientId, LabTestResultId, PatientVisitId, LabTestType, TestResultValue,
-                        ReferenceRangeHigh, ReferenceRangeLow, LabTestPerformedDate FROM $messages WHERE LabTestResultId IS NOT NULL");
+                        ReferenceRangeHigh, ReferenceRangeLow, LabTestPerformedDate FROM $messages WHERE LabTestType IS NOT NULL");
 @mysql_select_db($database2) or die(mysql_error());
 while ($row = mysql_fetch_array($result)) {
     $import=mysql_query("INSERT INTO LabTestReport VALUES ('".$row{'patientId'}."', '".$row{'LabTestResultId'}."', '".
@@ -169,5 +170,10 @@ while ($row = mysql_fetch_array($result)) {
     if(!$import)
         die('Invalid query: ' . mysql_error());
 }
+
+
+$date = date('Y-m-d H:i:s');
+@mysql_select_db($database) or die(mysql_error());
+mysql_query("UPDATE $messages SET Last_Accessed = '".$date."' WHERE MsgId IS NOT NULL");
 
 mysql_close();

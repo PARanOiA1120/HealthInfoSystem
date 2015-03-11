@@ -1,4 +1,3 @@
-
 <?php
 
 $username = "root";
@@ -15,26 +14,29 @@ $patientInfo = array();
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-$sql = "SELECT patientId, GivenName, FamilyName, BirthTime, suffix,
-gender, Patient.GuardianNo, Relationship, FirstName, LastName, phone, address, city, state, zip FROM Patient INNER JOIN Guardians WHERE patientId =$pid AND Patient.GuardianNo = Guardians.GuardianNo";
-//$sql = "SELECT patientId, GivenName, FamilyName, BirthTime, suffix,
-//gender, GuardianNo, Relationship FROM Patient WHERE patientId =$pid";
+$sql = "SELECT Patient_has_Allergies.Allergy_id, Substance, Reaction, Patient_has_Allergies.Status
+FROM Patient_has_Allergies INNER JOIN Allergies WHERE patientId =$pid AND Patient_has_Allergies.Allergy_id = Allergies.Allergy_id";
+
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
     // output data of each row
     while($row = $result->fetch_assoc()) {
         $patientInfo[] = $row;
     }
-
 } else {
     echo "0 results";
 }
+
+$sql2 = "SELECT PlanId, Activity, ScheduledDate FROM patient_plans_activity WHERE patientId = $pid";
+$result2 = $conn->query($sql2);
+if ($result2->num_rows > 0) {
+    // output data of each row
+    while($row = $result2->fetch_assoc()) {
+        $patientInfo[] = $row;
+    }
+} else {
+    echo "0 results";
+}
+
+
 echo json_encode($patientInfo);
-
-
-
-
-
-
-
-

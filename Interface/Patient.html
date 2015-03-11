@@ -68,7 +68,6 @@
 
     function myFunction(response) {
         var arr = JSON.parse(response);
-        alert(arr)
         var i;
         var out = "<table>";
         var out1 = "<table>";
@@ -113,6 +112,7 @@
     document.getElementById("saveBtn").addEventListener("click", function(){
         var patient_key_array = ["patientId", "GivenName", "FamilyName", "BirthTime", "suffix",
             "gender", "GuardianNo", "Relationship"];
+        var guardian_key_array = ["FirstName", "LastName", "phone", "address", "city", "state", "zip"];
         var patientAssocArray = {};
         var table = document.getElementById("Patient");
         for (var i = 1, row; row = table.rows[i]; i++) {
@@ -120,6 +120,14 @@
                 patientAssocArray[patient_key_array[j]] = table.rows[1].cells[j].innerText.split(/\n/)[0];
             }
         }
+
+        var guardian_table = document.getElementById("Guardian");
+        for (var i = 1, row; row = table.rows[i]; i++) {
+            for (var j = 1, col; col = row.cells[j]; j++) {
+                patientAssocArray[guardian_key_array[j-1]] = guardian_table.rows[1].cells[j].innerText.split(/\n/)[0];
+            }
+        }
+
         patientEditedJson = JSON.stringify(patientAssocArray);
         var json_http = new XMLHttpRequest();
         var url = "http://localhost/HealthInfoSystem/data/update_patient.php?PatientID="+ pid;

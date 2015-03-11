@@ -18,27 +18,129 @@
 </head>
 <body>
 
-<table border=1, align="center", id="Patient">
+<table border=1, align="center", id="Allergy">
     <h2> Allergy </h2>
+    <thead>
     <tr>
         <th>Allergy ID</th>
         <th>Substance</th>
         <th>Reaction</th>
         <th>Status</th>
     </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
 
 </table>
 
-<table border=1, align="center", id="Guardian">
+<table border=1, align="center", id="Plan">
     <h2> Plan </h2>
+    <thead>
     <tr>
         <th>Plan ID</th>
         <th>Activity</th>
         <th>Scheduled Date</th>
     </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
 </table>
 
 <button id="saveBtn">Save</button>
+
+<script>
+    var xmlhttp = new XMLHttpRequest();
+    var oldURL = document.referrer;
+    var pid = oldURL.substring(60,65);
+
+    var first_time = true;
+    var xmlhttp = new XMLHttpRequest();
+    var url = "http://localhost/HealthInfoSystem/data/show_doctor.php?PatientID="+ pid;
+
+    xmlhttp.onreadystatechange=function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+            myFunction(xmlhttp.responseText);
+        }
+    }
+    xmlhttp.open("GET", url, true);
+    xmlhttp.send();
+
+    function myFunction(response) {
+        var arr = JSON.parse(response);
+        //window.alert(arr.length);
+        var i;
+        var out = "<table>";
+        var out1 = "<table>";
+        var allergy_count = 0;
+        var plan_count = 0;
+        var allergy_table = document.getElementById("Allergy").getElementsByTagName('tbody')[0];
+        var plan_table = document.getElementById("Plan").getElementsByTagName('tbody')[0];
+
+        for (i = 0; i < arr.length; i++) {
+            if (arr[i]["PlanId"] === undefined) {
+                out += "<tr><td>" + arr[i]["Allergy_id"] + "</td>";
+                out += "<td><div contenteditable>" + arr[i]["Substance"] + "</div></td>";
+                out += "<td><div contenteditable>" + arr[i]["Reaction"] + "</div></td>";
+                out += "<td><div contenteditable>" + arr[i]["Status"] + "</div></td></tr>";
+            }
+            else {
+                out1 += "<tr><td>" + arr[i]["PlanId"] + "</td>";
+                out1 += "<td>" + arr[i]["Activity"] + "</td>";
+                out1 += "<td><div contenteditable>" + arr[i]["ScheduledDate"] + "</div></td></tr>";
+
+
+            }
+        }
+
+        allergy_table.innerHTML = out;
+        plan_table.innerHTML=out1;
+
+    }
+
+    document.getElementById("saveBtn").addEventListener("click", function(){
+        var allergy_key_array = ["Allergy_id", "Substance", "Reaction", "Status"];
+        var plan_key_array = ["PlanId", "Activity", "ScheduledDate"];
+
+        var doctorArray = [];
+        var allergy_table = document.getElementById("Allergy");
+        for (var i = 1, row; row = allergy_table.rows[i]; i++) {
+            var doctorAssocArray = {};
+            for (var j = 0, col; col = row.cells[j]; j++) {
+                doctorAssocArray[allergy_key_array[j]] = allergy_table.rows[i].cells[j].innerText.split(/\n/)[0];
+            }
+            doctorArray.push(doctorAssocArray);
+        }
+
+        var plan_table = document.getElementById("Plan");
+        for (var i = 1, row; row = plan_table.rows[i]; i++) {
+            var doctorAssocArray = {};
+            for (var j = 0, col; col = row.cells[j]; j++) {
+                doctorAssocArray[plan_key_array[j]] = plan_table.rows[i].cells[j].innerText.split(/\n/)[0];
+            }
+            doctorArray.push(doctorAssocArray);
+        }
+
+        doctorEditedJson = JSON.stringify(doctorArray);
+        var json_http = new XMLHttpRequest();
+        var url = "http://localhost/HealthInfoSystem/data/update_doctor.php?PatientID="+ pid;
+        var params = doctorEditedJson;
+        json_http.open("POST", url, true);
+
+        json_http.setRequestHeader("Content-type", "application/json");
+        json_http.setRequestHeader("Content-length", params.length);
+        json_http.setRequestHeader("Connection","close");
+
+        json_http.onreadystatechange = function() {
+            if(json_http.readyState == 4 && json_http.status == 200){
+                alert(json_http.responseText);
+            }
+        }
+        json_http.send(params);
+    });
+
+</script>
 
 </body>
 </html>

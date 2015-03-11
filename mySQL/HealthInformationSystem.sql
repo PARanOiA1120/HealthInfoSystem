@@ -34,11 +34,11 @@ create table `Patient`(
 	`suffix` varchar(100) DEFAULT NULL,
     `gender` varchar(100) DEFAULT NULL,
     #Guardian info
-	`GuardianNo` varchar(100),
+	`GuardianNo` varchar(100) NOT NULL,
     `Relationship` varchar(100) DEFAULT NULL,
     #InsuranceCompany
-    `providerId` varchar(100),
-    `PayerId` varchar(100),
+    `providerId` varchar(100) NOT NULL,
+    `PayerId` varchar(100) NOT NULL,
     `PolicyType` varchar(100) DEFAULT NULL,
 	`Purpose` varchar(100) DEFAULT NULL,
     `PolicyHolder` varchar(100) DEFAULT NULL,
